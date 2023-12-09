@@ -7,13 +7,13 @@ docker-compose down
 docker-compose up --build -d
 
 # Copy requirements.txt to the Spark container
-docker cp -L requirements.txt spark_sample-spark-master-1:/opt/bitnami/spark/requirements.txt
+docker cp -L requirements.txt twt_analysis-spark-master-1:/opt/bitnami/spark/requirements.txt
 
 # Copy analyzer.py to the Spark container
-docker cp -L analyzer.py spark_sample-spark-master-1:/opt/bitnami/spark/analyzer.py
+docker cp -L analyzer.py twt_analysis-spark-master-1:/opt/bitnami/spark/analyzer.py
 
 # Copy client.properties to the Spark container
-docker cp -L client.properties spark_sample-spark-master-1:/opt/bitnami/spark/client.properties
+docker cp -L client.properties twt_analysis-spark-master-1:/opt/bitnami/spark/client.properties
 
 # Install Python dependencies in the Spark container
 docker-compose exec spark-master pip install --no-cache-dir -r /opt/bitnami/spark/requirements.txt
