@@ -3,12 +3,11 @@
 how to start project.
 
 1. build and run docker image for kafka producer.
-   
-   **-> cd tweets_producer.
-   -> docker build -t tp .
-   -> docker run tp**
+2.  cd tweets_producer.
+3.  docker build -t tp .
+4.  docker run tp**
 This will stream tweets the tweets to kafka topic
 
-3. docker compose file is configured to run the spark application, backend server and web application
-4. can be executed through
+5. docker compose file is configured to run the spark application, backend server and web application
+6. can be executed through
 1. **execution.bat or execution.sh**
