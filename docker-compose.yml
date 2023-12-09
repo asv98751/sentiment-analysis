@@ -44,7 +44,13 @@ services:
     depends_on:
       - spark-master
     ports:
-      - "9999:9999"
+      - "8080:9999"
+
+  web:
+    build:
+      context: fe
+    ports:
+      - "4200:80"
 
 networks:
     mynet:

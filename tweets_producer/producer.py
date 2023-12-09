@@ -5,7 +5,7 @@ import json
 import time
 import random
 
-csv_path_file = 'tweets_sub.csv'
+csv_path_file = 'tweets.csv'
 chunk_size = 1
 
 csv_reader = pd.read_csv(csv_path_file, chunksize=chunk_size)

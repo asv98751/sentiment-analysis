@@ -1,35 +1,53 @@
 from flask import Flask, request, jsonify
 from elasticsearch import Elasticsearch
+from flask_cors import CORS
 
 app = Flask(__name__)
 ELASTIC_URL = "https://site:33cec238f197ade0bf08eaa4cf1c5736@oin-us-east-1.searchly.com:443"
-es = Elasticsearch([ELASTIC_URL], use_ssl=True, verify_certs=True)
+es = Elasticsearch([ELASTIC_URL],
+                    use_ssl=True,
+                    verify_certs=False
+                )
+
+CORS(app, resources={r"*": {"origins": "*"}})
+
 index = 'tweet-sentiments'
 
 @app.route('/search', methods=['GET'])
 def search():
     query = request.args.get('q', '')
 
+    # Check if the query is empty, and if so, perform a match_all query
     if not query:
-        return jsonify({'error': 'Query parameter "q" is required'}), 400
-
-    # Perform a simple match query
-    result = es.search(index=index, body={
-        'query': {
-            'match': {
-                'Review': query
-            }
-        },
-        'sort': [
-            {'timestamp': {'order': 'desc'}}  # Sort by timestamp in descending order (latest first)
-        ]
-    })
+        result = es.search(index=index, body={
+            'query': {
+                'match_all': {}
+            },
+            'sort': [
+                {'timestamp': {'order': 'desc'}}  # Sort by timestamp in descending order (latest first)
+            ]
+        })
+    else:
+        # Perform a simple match query
+        result = es.search(index=index, body={
+            'query': {
+                'match': {
+                    'Review': query
+                }
+            },
+            'sort': [
+                {'timestamp': {'order': 'desc'}}  # Sort by timestamp in descending order (latest first)
+            ]
+        })
+        
+    total_hits = result.get('hits', {}).get('total', {}).get('value', 0)
 
     hits = result.get('hits', {}).get('hits', [])
 
     search_results = [{'id': hit['_id'], 'source': hit['_source']} for hit in hits]
 
-    return jsonify({'results': search_results})
+    return jsonify({'results': search_results, 'total': total_hits})
+
 @app.route('/sentiment_aggregation', methods=['GET'])
 def sentiment_aggregation():
 
@@ -98,4 +116,4 @@ def array_field_aggregation():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=9999)
+    app.run(debug=True, port=9999, host='0.0.0.0')

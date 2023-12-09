@@ -1,0 +1,95 @@
+/* CSS styles for your webpage */
+body {
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif, fantasy;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: white;
+  color: rgb(29, 161, 244);
+  padding: 10px;
+  text-align: center;
+  
+}
+
+#search-bar {
+  width: 500px;
+  padding: 10px;
+  margin: 20px auto;
+  display: block;
+}
+
+#content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 90%;
+  margin: 20px auto;
+}
+
+/* Style for the search input and button */
+#searchInput {
+  padding: 10px;
+  margin-right: 10px;
+}
+
+
+#graph {
+  width: 100%;
+  min-height: 200px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: floralwhite;
+}
+
+#box {
+  width: 35%;
+  min-height: 100px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-top: 20px;
+  
+}
+
+
+
+/* Add more specific styles as needed */
+#dashboard {
+  width: 100%;
+  overflow: hidden; /* Clear floats */
+}
+
+#tweetspanel {
+  float: left;
+  width: 49%;
+  /*background-color: #fdfcfc; /* Optional background color */
+  
+}
+
+
+
+#graphs {
+  float: right;
+  width: 50%;
+  background-color: floralwhite; /* Optional background color */
+   /* padding-right: 10%;  */
+   margin-right: 10px;
+   margin-top: 100px;
+   /* height: 1px; */
+}
+
+#donutChartContainer {
+  width: 100%; /* Set the width to 100% to fit the screen */
+  min-height: 200px; /* Adjust the height as needed */
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: floralwhite;
+}
+  #donutChart{
+
+    width:400px !important;
+    height:400px !important;
+  
+  }
+

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Webpage</title>
+    <link rel="stylesheet" href="twit.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Style for the left container */
+        .left-container {
+            float: left; /* Float the container to the left */
+            width: 670px; /* Adjust the width as needed */
+            padding: 20px; 
+            /* margin-left: 20px; */
+            /* background-color: blue; */
+            
+        }
+
+        .custom-table {
+            width: 670px; /* Set the width of the table */
+            border-collapse: collapse; /* Collapse borders */
+            border: 1px solid #ccc; /* Add a border around the table */
+            margin-bottom: 25px;
+            /* background-color: blue; */
+        }
+
+        /* Style for table cells */
+        .custom-table td {
+            border: 1px solid #ccc; /* Add cell borders */
+            padding: 10px; /* Add padding to cells */
+            height: 90px;
+            box-sizing: border-box;
+            white-space: nowrap; /* Prevent text from wrapping */
+            overflow: hidden; /* Hide overflowing text */
+            max-width: 180px; /* Set a maximum width for the cells */
+            text-overflow: ellipsis; /* Add ellipsis for truncated text */
+            background-color: aquamarine;
+        }
+
+        .ellipsis {
+            /* text-overflow: ellipsis; Add ellipsis for truncated text */
+            /* white-space: nowrap; Prevent text from wrapping */
+            /* overflow: hidden; Hide overflowing text */
+            width: 50%;
+            /* text-wrap: wrap; */
+            word-wrap:normal;
+        }
+        .sentimentStyle {
+            text-overflow: ellipsis; /* Add ellipsis for truncated text */
+            white-space: nowrap; /* Prevent text from wrapping */
+            overflow: hidden; /* Hide overflowing text */
+            
+        }
+        .competitorStyle {
+            text-overflow: ellipsis; /* Add ellipsis for truncated text */
+            white-space: nowrap; /* Prevent text from wrapping */
+            overflow: hidden; /* Hide overflowing text */
+            width: 30%;
+        }
+        
+
+        
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tweets Sentiment Analysis Dashboard</h1>
+    </header>
+    <div>
+        <input type="text" id="searchInput" placeholder="Search...">
+        <button onclick="search()">Search</button>
+    </div>
+    <div id="dashboard">
+        <div id="tweetspanel">
+            <h1>Tweet Table</h1>
+            
+            <div class="left-container">
+                
+            </div>
+        </div>
+        <div id="graphs">
+            <div id="bg">
+                <div id="graph">
+                    <canvas id="myChart"></canvas> 
+                </div>
+                
+            </div>
+            <div id="donutChartContainer">
+                <canvas id="donutChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    
+
+    <script>
+        let competitorCounts = {};
+        // // Function to fetch data from the API
+        async function fetchData(searchItem) {
+
+            
+            try {
+                let URL=""
+                if (searchItem){
+                    URL = `http://localhost:8080/search?q=${searchItem}`
+                }
+                else{
+                    URL = 'http://localhost:8080/search'
+                }
+                const response = await fetch(URL);
+                const data = await response.json();
+                
+                return data;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        async function fetchPiechartData(searchItem) {
+            try {
+                let URL=""
+                if (searchItem){
+                    URL = `http://localhost:8080/sentiment_aggregation?q=${searchItem}`
+                }
+                else{
+                    URL = 'http://localhost:8080/sentiment_aggregation'
+                }
+                const response = await fetch(URL);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+                // Function to create the pie chart
+                async function createPieChart(searchItem) {
+            const data = await fetchPiechartData(searchItem);
+
+            if (data) {
+                // Get the canvas element
+                const ctx = document.getElementById('donutChart').getContext('2d');
+
+                // Create a data array for the chart
+                const chartData = {
+                    labels: ['Positive', 'Negative', 'Neutral'],
+                    datasets: [{
+                        data: [
+                            data.sentiment_counts[0].count,
+                            data.sentiment_counts[1].count,
+                            data.sentiment_counts[2].count,
+                        ],
+                        backgroundColor: ['#0000FF', '#EE4B2B', '#FFCE56'], // Colors for the slices
+                    }],
+                };
+                let donutChart;
+                console.log(donutChart)
+                console.log(myChart)
+                if (donutChart) {
+                    console.log(donutChart)
+                        donutChart.destroy();
+                        
+                        donutChart = new Chart(ctx, {
+                    
+                        type: 'pie',
+                        data: chartData,
+                        options: {
+                            legend: {
+                                display: true,
+                            },
+                        },
+                });
+                    } else {
+                        
+                        donutChart = new Chart(ctx, {
+                    
+                            type: 'pie',
+                            data: chartData,
+                            options: {
+                                legend: {
+                                    display: true,
+                                },
+                            },
+                });
+                    }
+                // Create the pie chart
+                
+            }
+        }
+        const keyCounts = {};
+
+        // Function to create and populate tables with API data
+        // Function to create and populate tables with API data
+
+
+async function createAndPopulateTables(searchItem) {
+    // Get a reference to the left-container div
+    var leftContainer = document.querySelector('.left-container');
+    
+    // Fetch data from the API
+    const apiData = await fetchData(searchItem);
+    const apiPieData = await fetchPiechartData(searchItem);
+    if(searchItem){
+        
+       const element=document.getElementsByTagName("table")
+    //    console.log(tables)
+    //    tables.forEach((table)=>{
+    //     table.remove();
+    //    }
+    //    )
+    for (let index = element.length - 1; index >= 0; index--) {
+    element[index].parentNode.removeChild(element[index]);
+}
+ const chart=document.getElementsByTagName("canvas")
+ 
+//  chart.parentNode.removeChild(chart)
+ for (let index = chart.length - 1; index >= 0; index--) {
+    chart[index].parentNode.removeChild(chart[index]);
+}
+    }
+    console.log("after")
+    if (apiData) {
+        // Initialize an empty object to store the counts of string objects in competitors
+        
+
+        // Create and populate tables with API data
+        apiData.results.forEach(item => {
+            // Count occurrences of string objects in competitors array
+            item.source.competitors.forEach(competitor => {
+                if (competitorCounts[competitor]) {
+                    competitorCounts[competitor]++;
+                } else {
+                    competitorCounts[competitor] = 1;
+                }
+            });
+
+            var table = document.createElement('table');
+            table.className = 'custom-table';
+            var se = "";
+
+            if (item.source.sentiment === 1) {
+                se = "Positive";
+            } else if (item.source.sentiment === 0) {
+                se = "Neutral";
+            } else {
+                se = "Negative";
+            }
+
+            var row = table.insertRow();
+            var cell1 = row.insertCell(0);
+            cell1.textContent = item.source.Review;
+            cell1.className = 'ellipsis';
+
+            var cell2 = row.insertCell(1);
+            cell2.textContent = se;
+            cell2.className = 'sentimentStyle';
+
+            var cell3 = row.insertCell(2);
+            cell3.textContent = item.source.competitors; // Display the counts in the cell
+            cell3.className = 'competitorStyle';
+
+            leftContainer.appendChild(table);
+        });
+
+        console.log(competitorCounts); // This will log the counts of string objects in the "competitors" array
+
+        updateGraphWithData(competitorCounts)
+        createPieChart(searchItem);
+    }
+}
+
+    
+
+
+        // Call the function to create and populate tables when the page loads
+        // window.addEventListener('DOMContentLoaded', createAndPopulateTables);
+
+    function updateGraphWithData(competitorCounts) {
+        const container=document.getElementById("graph")
+        var canvas = document.createElement('canvas');
+        canvas.setAttribute("id", "myChart");
+        container.appendChild(canvas)
+        console.log(container)
+        console.log(canvas)
+        
+      const ctx = document.getElementById('myChart').getContext('2d');
+      
+      // Extract the labels (competitor names) and data (counts) from the competitorCounts object
+      const labels = Object.keys(competitorCounts);
+      const data = Object.values(competitorCounts);
+      console.log(labels)
+      console.log(data)
+      let myChart;
+                if (myChart) {
+                    myChart.destroy();
+                        
+                    myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Occurrences',
+            data: data,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+          }],
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+                    } else {
+                        
+                        myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Occurrences',
+            data: data,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+          }],
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+                    }
+        
+    }
+
+// Update the graph with mock data
+// updateGraphWithData(competitorCounts);
+
+            async function search() {
+                        competitorCounts={}  
+                        const searchTerm = document.getElementById("searchInput").value;
+                        console.log(searchTerm)
+                        const searchResults = document.getElementById("searchResults");
+
+                        // Replace 'YOUR_API_ENDPOINT' with the actual API endpoint
+                        const apiUrl = `https://api.example.com/search?q=${searchTerm}`;
+                        console.log(searchTerm)
+                        createAndPopulateTables(searchTerm);
+                        
+
+                        
+                    }
+                    createAndPopulateTables();
+    </script>
+    <script>
+        // Function to refresh the page every 10 minutes (600,000 milliseconds)
+        function autoRefresh() {
+            setTimeout(function () {
+                location.reload();
+            }, 600000); // 600,000 milliseconds = 10 minutes
+        }
+
+        // Call the autoRefresh function when the page loads
+        window.onload = autoRefresh;
+    </script>
+
+    <!-- <script src="twit.js"></script> -->
+    
+</body>
+</html>
